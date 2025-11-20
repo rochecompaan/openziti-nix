@@ -1,0 +1,43 @@
+name: Auto update (per-package)
+
+on:
+  schedule:
+    - cron: '37 5 * * *'
+  workflow_dispatch:
+    inputs:
+      package:
+        description: "Package to update (flake attr)"
+        required: true
+        default: ziti-cli
+
+jobs:
+  update:
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v27
+        with:
+          extra_nix_config: |
+            accept-flake-config = true
+
+      - name: Setup Cachix (optional)
+        uses: cachix/cachix-action@v12
+        with:
+          name: openziti-nix
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+
+      - name: Run nix-update-action
+        uses: Mic92/nix-update-action@v2
+        with:
+          nix-update-args: --flake .#${{ github.event.inputs.package || 'ziti-cli' }} --commit --build
+          pr-title: "chore: nix-update ${{ github.event.inputs.package || 'ziti-cli' }}"
+          pr-labels: dependencies, automated pr
+
