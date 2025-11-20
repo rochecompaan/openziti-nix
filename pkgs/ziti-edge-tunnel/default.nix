@@ -4,6 +4,7 @@
   fetchFromGitHub,
   cmake,
   git,
+  zip,
   openssl,
   pkg-config,
   libuv,
@@ -100,7 +101,7 @@ stdenv.mkDerivation rec {
     "-DDISABLE_LIBSYSTEMD_FEATURE=ON" # Disable direct integration to use resolvectl fallback
     "-DZITI_SDK_DIR=../deps/ziti-sdk-c"
     "-DZITI_SDK_VERSION=1.9.15"
-    # Force SDK install prefix to Nix output to avoid absolute /opt path
+    # Attempt to steer upstream to install under our output
     "-DZITI_SDK_PREFIX=$out"
     # Ensure a concrete version is embedded; upstream library stringifies ZITI_VERSION
     "-DCMAKE_C_FLAGS=-DZITI_VERSION=v${version}"
@@ -113,10 +114,16 @@ stdenv.mkDerivation rec {
     "-DFETCHCONTENT_FULLY_DISCONNECTED=ON"
   ];
 
+  # Ensure absolute install paths are redirected into the Nix store output
+  preInstall = ''
+    export DESTDIR="$out"
+  '';
+
   nativeBuildInputs = [
     cmake
     pkg-config
     git
+    zip
   ];
   buildInputs = [
     openssl
