@@ -1,19 +1,21 @@
-{ stdenv
-, fetchgit
-, fetchFromGitHub
-, cmake
-, git
-, openssl
-, pkg-config
-, libuv
-, zlib
-, libsodium
-, protobufc
-, json_c
-, llhttp
-, systemd
-, lib
-, ... }:
+{
+  stdenv,
+  fetchgit,
+  fetchFromGitHub,
+  cmake,
+  git,
+  openssl,
+  pkg-config,
+  libuv,
+  zlib,
+  libsodium,
+  protobufc,
+  json_c,
+  llhttp,
+  systemd,
+  lib,
+  ...
+}:
 
 stdenv.mkDerivation rec {
   pname = "ziti-edge-tunnel";
@@ -109,8 +111,20 @@ stdenv.mkDerivation rec {
     "-DFETCHCONTENT_FULLY_DISCONNECTED=ON"
   ];
 
-  nativeBuildInputs = [ cmake pkg-config git ];
-  buildInputs = [ openssl libuv zlib libsodium protobufc json_c llhttp ];
+  nativeBuildInputs = [
+    cmake
+    pkg-config
+    git
+  ];
+  buildInputs = [
+    openssl
+    libuv
+    zlib
+    libsodium
+    protobufc
+    json_c
+    llhttp
+  ];
 
   propagatedBuildInputs = [ systemd ]; # For the resolvectl command at runtime
 
