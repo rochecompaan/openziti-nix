@@ -25,7 +25,7 @@ stdenv.mkDerivation rec {
     owner = "openziti";
     repo = "ziti-tunnel-sdk-c";
     rev = "d9a63d44aceb6460af4fec8e4145e65d1e6d17fa"; # v1.9.3
-    hash = lib.fakeHash;
+    hash = "sha256-8YUsI+D3fh9hE08wp3l3KJ6NGNRXZJrP+GxOPEP04LA=";
     fetchSubmodules = true;
   };
 
@@ -33,7 +33,7 @@ stdenv.mkDerivation rec {
     owner = "openziti";
     repo = "ziti-sdk-c";
     rev = "4e059d4f814b239219c5b04a287b531bfaaa4f04"; # 1.9.15
-    hash = lib.fakeHash;
+    hash = "sha256-8YUsI+D3fh9hE08wp3l3KJ6NGNRXZJrP+GxOPEP04LA=";
     fetchSubmodules = true;
   };
 
@@ -73,10 +73,12 @@ stdenv.mkDerivation rec {
       --replace 'set(_IMPORT_PREFIX "${llhttp}")' 'set(_IMPORT_PREFIX "${llhttp.dev}")'
 
     # Patch hardcoded paths to systemd tools
-    substituteInPlace programs/ziti-edge-tunnel/netif_driver/linux/resolvers.h \
-      --replace '"/usr/bin/busctl"' '"${systemd}/bin/busctl"' \
-      --replace '"/usr/bin/resolvectl"' '"${systemd}/bin/resolvectl"' \
-      --replace '"/usr/bin/systemd-resolve"' '"${systemd}/bin/systemd-resolve"'
+    if [ -f programs/ziti-edge-tunnel/netif_driver/linux/resolvers.h ]; then
+      substituteInPlace programs/ziti-edge-tunnel/netif_driver/linux/resolvers.h \
+        --replace '"/usr/bin/busctl"' '"${systemd}/bin/busctl"' \
+        --replace '"/usr/bin/resolvectl"' '"${systemd}/bin/resolvectl"' \
+        --replace '"/usr/bin/systemd-resolve"' '"${systemd}/bin/systemd-resolve"'
+    fi
   '';
 
   preConfigure = ''
