@@ -27,10 +27,6 @@ OpenZiti packages and NixOS modules for `ziti-cli` and `ziti-edge-tunnel`.
 }
 ```
 
-Note: The option `programs.ziti-edge-tunnel.tunnel.enable` has been renamed to
-`programs.ziti-edge-tunnel.service.enable`. The old option still works via a
-compatibility alias but may be removed in the future.
-
 ### Overlay-only
 
 ```nix
