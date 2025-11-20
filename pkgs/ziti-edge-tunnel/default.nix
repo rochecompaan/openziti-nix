@@ -26,8 +26,7 @@ stdenv.mkDerivation rec {
     owner = "openziti";
     repo = "ziti-tunnel-sdk-c";
     rev = "v${version}";
-    hash = "sha256-8YUsI+D3fh9hE08wp3l3KJ6NGNRXZJrP+GxOPEP04LA=";
-    fetchSubmodules = true;
+    hash = "sha256-gcwD3t3HXx78Xt62rmcLzV80xILOlB0GD4XqHJdJmaw=";
   };
 
   ziti_sdk_src = fetchFromGitHub {
@@ -35,7 +34,6 @@ stdenv.mkDerivation rec {
     repo = "ziti-sdk-c";
     rev = "${ziti_sdk_version}";
     hash = "sha256-8YUsI+D3fh9hE08wp3l3KJ6NGNRXZJrP+GxOPEP04LA=";
-    fetchSubmodules = true;
   };
 
   lwip_src = fetchFromGitHub {
