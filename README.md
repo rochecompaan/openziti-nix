@@ -20,6 +20,8 @@ OpenZiti packages and NixOS modules for `ziti-cli` and `ziti-edge-tunnel`.
           programs.ziti.enable = true;
           programs.ziti-edge-tunnel.enable = true;
           programs.ziti-edge-tunnel.service.enable = true;
+          # Optional: change where identities are read from
+          # programs.ziti-edge-tunnel.service.identityDir = "/var/lib/ziti/identities";
         })
       ];
     };
