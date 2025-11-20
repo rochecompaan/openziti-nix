@@ -11,15 +11,20 @@ let
   cfg = config.programs.ziti-edge-tunnel;
 in
 {
+  imports = [
+    (mkRenamedOptionModule [ "programs" "ziti-edge-tunnel" "tunnel" "enable" ]
+      [ "programs" "ziti-edge-tunnel" "service" "enable" ])
+  ];
+
   options.programs.ziti-edge-tunnel = {
     enable = mkEnableOption "Ziti Edge Tunnel";
-    tunnel.enable = mkEnableOption "Ziti Edge Tunnel service";
+    service.enable = mkEnableOption "Ziti Edge Tunnel service";
   };
 
   config = mkIf cfg.enable {
     environment.systemPackages = [ pkgs.ziti-edge-tunnel ];
 
-    systemd.services.ziti-edge-tunnel = mkIf cfg.tunnel.enable {
+    systemd.services.ziti-edge-tunnel = mkIf cfg.service.enable {
       description = "Ziti Edge Tunnel";
       wantedBy = [ "multi-user.target" ];
       after = [ "network-online.target" ];
