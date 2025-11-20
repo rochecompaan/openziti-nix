@@ -21,11 +21,12 @@
 stdenv.mkDerivation rec {
   pname = "ziti-edge-tunnel";
   version = "1.9.3";
+  ziti_sdk_version = "1.9.15";
 
   src = fetchFromGitHub {
     owner = "openziti";
     repo = "ziti-tunnel-sdk-c";
-    rev = "d9a63d44aceb6460af4fec8e4145e65d1e6d17fa"; # v1.9.3
+    rev = "v${version}";
     hash = "sha256-8YUsI+D3fh9hE08wp3l3KJ6NGNRXZJrP+GxOPEP04LA=";
     fetchSubmodules = true;
   };
@@ -33,7 +34,7 @@ stdenv.mkDerivation rec {
   ziti_sdk_src = fetchFromGitHub {
     owner = "openziti";
     repo = "ziti-sdk-c";
-    rev = "4e059d4f814b239219c5b04a287b531bfaaa4f04"; # 1.9.15
+    rev = "v${ziti_sdk_version}";
     hash = "sha256-8YUsI+D3fh9hE08wp3l3KJ6NGNRXZJrP+GxOPEP04LA=";
     fetchSubmodules = true;
   };
@@ -100,7 +101,7 @@ stdenv.mkDerivation rec {
     "-DDISABLE_SEMVER_VERIFICATION=ON"
     "-DDISABLE_LIBSYSTEMD_FEATURE=ON" # Disable direct integration to use resolvectl fallback
     "-DZITI_SDK_DIR=../deps/ziti-sdk-c"
-    "-DZITI_SDK_VERSION=1.9.15"
+    "-DZITI_SDK_VERSION=${ziti_sdk_version}"
     # Attempt to steer upstream to install under our output
     "-DZITI_SDK_PREFIX=$out"
     # Ensure a concrete version is embedded; upstream library stringifies ZITI_VERSION
