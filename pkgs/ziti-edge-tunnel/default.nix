@@ -112,11 +112,6 @@ stdenv.mkDerivation rec {
     "-DFETCHCONTENT_FULLY_DISCONNECTED=ON"
   ];
 
-  # Ensure absolute install paths are redirected into the Nix store output
-  preInstall = ''
-    export DESTDIR="$out"
-  '';
-
   nativeBuildInputs = [
     cmake
     pkg-config
