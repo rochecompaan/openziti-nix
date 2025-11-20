@@ -1,6 +1,6 @@
 {
   stdenv,
-  fetchgit,
+  # fetchgit no longer needed for primary sources
   fetchFromGitHub,
   cmake,
   git,
@@ -21,22 +21,20 @@ stdenv.mkDerivation rec {
   pname = "ziti-edge-tunnel";
   version = "1.9.3";
 
-  src = fetchgit {
-    url = "https://github.com/openziti/ziti-tunnel-sdk-c.git";
+  src = fetchFromGitHub {
+    owner = "openziti";
+    repo = "ziti-tunnel-sdk-c";
     rev = "d9a63d44aceb6460af4fec8e4145e65d1e6d17fa"; # v1.9.3
-    hash = "sha256-ekmvxj3xJAyq51HIRIT4f1bFcli32fTd/XnAj9LOqvQ=";
-    leaveDotGit = true;
+    hash = lib.fakeHash;
     fetchSubmodules = true;
-    deepClone = true;
   };
 
-  ziti_sdk_src = fetchgit {
-    url = "https://github.com/openziti/ziti-sdk-c.git";
+  ziti_sdk_src = fetchFromGitHub {
+    owner = "openziti";
+    repo = "ziti-sdk-c";
     rev = "4e059d4f814b239219c5b04a287b531bfaaa4f04"; # 1.9.15
-    hash = "sha256-bFyUc6SDpv38rC+mXNTZRz/HwBMF7vDXynGwTKazReE=";
-    leaveDotGit = true;
+    hash = lib.fakeHash;
     fetchSubmodules = true;
-    deepClone = true;
   };
 
   lwip_src = fetchFromGitHub {
