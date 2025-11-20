@@ -8,11 +8,15 @@ on:
 jobs:
   build:
     name: Build ${{ matrix.system }}
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
-        system: [ x86_64-linux, aarch64-linux ]
+        include:
+          - system: x86_64-linux
+            runner: ubuntu-latest
+          - system: aarch64-linux
+            runner: ubuntu-24.04-arm64
     env:
       CACHIX_CACHE: ${{ vars.CACHIX_CACHE }}
     steps:
@@ -34,5 +38,5 @@ jobs:
 
       - name: Build packages
         run: |
-          nix build .#packages.${{ matrix.system }}.ziti-cli
-          nix build .#packages.${{ matrix.system }}.ziti-edge-tunnel
+          nix build --print-build-logs .#packages.${{ matrix.system }}.ziti-cli
+          nix build --print-build-logs .#packages.${{ matrix.system }}.ziti-edge-tunnel
