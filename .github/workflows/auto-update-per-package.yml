@@ -16,6 +16,8 @@ jobs:
       contents: write
       pull-requests: write
     runs-on: ubuntu-latest
+    env:
+      CACHIX_CACHE: ${{ vars.CACHIX_CACHE }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -29,9 +31,10 @@ jobs:
             accept-flake-config = true
 
       - name: Setup Cachix (optional)
+        if: env.CACHIX_CACHE != ''
         uses: cachix/cachix-action@v12
         with:
-          name: openziti-nix
+          name: ${{ env.CACHIX_CACHE }}
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
 
       - name: Run nix-update-action
@@ -40,4 +43,3 @@ jobs:
           nix-update-args: --flake .#${{ github.event.inputs.package || 'ziti-cli' }} --commit --build
           pr-title: "chore: nix-update ${{ github.event.inputs.package || 'ziti-cli' }}"
           pr-labels: dependencies, automated pr
-

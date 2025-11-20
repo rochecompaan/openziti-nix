@@ -13,6 +13,8 @@ jobs:
       fail-fast: false
       matrix:
         system: [ x86_64-linux, aarch64-linux ]
+    env:
+      CACHIX_CACHE: ${{ vars.CACHIX_CACHE }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,13 +26,13 @@ jobs:
             accept-flake-config = true
 
       - name: Setup Cachix (optional)
+        if: env.CACHIX_CACHE != ''
         uses: cachix/cachix-action@v12
         with:
-          name: openziti-nix
+          name: ${{ env.CACHIX_CACHE }}
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
 
       - name: Build packages
         run: |
           nix build .#packages.${{ matrix.system }}.ziti-cli
           nix build .#packages.${{ matrix.system }}.ziti-edge-tunnel
-
