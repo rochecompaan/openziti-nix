@@ -6,7 +6,7 @@
 }:
 
 buildGoModule rec {
-  pname = "ziti-cli";
+  pname = "ziti";
   version = "1.6.8";
 
   src = fetchFromGitHub {
@@ -18,6 +18,7 @@ buildGoModule rec {
 
   vendorHash = "sha256-CD/7WfRf6MEo7V9akA1/gP7b8wUr+2QCjbn6yIJYBYM=";
 
+  # Build the CLI; router/controller are subcommands of `ziti`
   subPackages = [ "ziti" ];
 
   env.CGO_ENABLED = 1;
@@ -29,7 +30,7 @@ buildGoModule rec {
   ];
 
   meta = {
-    description = "OpenZiti command-line interface";
+    description = "OpenZiti CLI and Router";
     homepage = "https://github.com/openziti/ziti";
     license = lib.licenses.asl20;
     mainProgram = "ziti";

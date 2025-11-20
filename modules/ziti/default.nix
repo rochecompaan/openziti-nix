@@ -16,6 +16,6 @@ in
   };
 
   config = mkIf cfg.enable {
-    environment.systemPackages = [ pkgs.ziti-cli ];
+    environment.systemPackages = [ pkgs.ziti ];
   };
 }

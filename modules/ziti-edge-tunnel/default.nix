@@ -68,6 +68,6 @@ in
     };
 
     # Declare the group to ensure it exists
-    users.groups.${cfg.service.group} = {};
+    users.groups.${cfg.service.group} = { };
   };
 }

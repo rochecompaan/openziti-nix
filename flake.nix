@@ -21,6 +21,8 @@
 
       overlay = final: prev: {
         ziti-cli = final.callPackage ./pkgs/ziti-cli { };
+        # Preferred combined package name
+        ziti = final.ziti-cli;
         ziti-edge-tunnel = final.callPackage ./pkgs/ziti-edge-tunnel { };
       };
 
@@ -40,8 +42,8 @@
           pkgs = mkPkgs system;
         in
         {
-          inherit (pkgs) ziti-cli ziti-edge-tunnel;
-          default = pkgs.ziti-cli;
+          inherit (pkgs) ziti ziti-edge-tunnel;
+          default = pkgs.ziti;
         }
       );
 
@@ -51,6 +53,7 @@
       nixosModules = {
         ziti = import ./modules/ziti;
         ziti-edge-tunnel = import ./modules/ziti-edge-tunnel;
+        ziti-router = import ./modules/ziti-router;
         withOverlays =
           { lib, ... }:
           {
@@ -63,6 +66,7 @@
               self.nixosModules.withOverlays
               self.nixosModules.ziti
               self.nixosModules.ziti-edge-tunnel
+              self.nixosModules.ziti-router
             ];
           };
       };

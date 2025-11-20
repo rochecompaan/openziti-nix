@@ -15,6 +15,7 @@ OpenZiti packages and NixOS modules for `ziti-cli` and `ziti-edge-tunnel`.
         openziti-nix.nixosModules.withOverlays
         openziti-nix.nixosModules.ziti
         openziti-nix.nixosModules.ziti-edge-tunnel
+        openziti-nix.nixosModules.ziti-router
         # or simply: openziti-nix.nixosModules.default
         ({ config, pkgs, ... }: {
           programs.ziti.enable = true;
@@ -22,6 +23,9 @@ OpenZiti packages and NixOS modules for `ziti-cli` and `ziti-edge-tunnel`.
           programs.ziti-edge-tunnel.service.enable = true;
           # Optional: change where identities are read from
           # programs.ziti-edge-tunnel.service.identityDir = "/var/lib/ziti/identities";
+          programs.ziti-router.enable = true;
+          programs.ziti-router.service.enable = true;
+          # programs.ziti-router.service.config = { /* ... */ };
         })
       ];
     };

@@ -38,5 +38,5 @@ jobs:
 
       - name: Build packages
         run: |
-          nix build --print-build-logs .#packages.${{ matrix.system }}.ziti-cli
+          nix build --print-build-logs .#packages.${{ matrix.system }}.ziti
           nix build --print-build-logs .#packages.${{ matrix.system }}.ziti-edge-tunnel
