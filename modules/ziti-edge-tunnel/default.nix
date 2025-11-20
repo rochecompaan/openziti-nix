@@ -11,11 +11,6 @@ let
   cfg = config.programs.ziti-edge-tunnel;
 in
 {
-  imports = [
-    (mkRenamedOptionModule [ "programs" "ziti-edge-tunnel" "tunnel" "enable" ]
-      [ "programs" "ziti-edge-tunnel" "service" "enable" ])
-  ];
-
   options.programs.ziti-edge-tunnel = {
     enable = mkEnableOption "Ziti Edge Tunnel";
     service.enable = mkEnableOption "Ziti Edge Tunnel service";
