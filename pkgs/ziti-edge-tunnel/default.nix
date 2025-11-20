@@ -1,6 +1,5 @@
 {
   stdenv,
-  # fetchgit no longer needed for primary sources
   fetchFromGitHub,
   cmake,
   git,
