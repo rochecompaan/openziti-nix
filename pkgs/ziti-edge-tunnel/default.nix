@@ -19,14 +19,14 @@
 
 stdenv.mkDerivation rec {
   pname = "ziti-edge-tunnel";
-  version = "1.9.3";
+  version = "1.9.5";
   ziti_sdk_version = "1.9.15";
 
   src = fetchFromGitHub {
     owner = "openziti";
     repo = "ziti-tunnel-sdk-c";
     rev = "v${version}";
-    hash = "sha256-gcwD3t3HXx78Xt62rmcLzV80xILOlB0GD4XqHJdJmaw=";
+    hash = "sha256-MmFakuhvUVF6wg7kXqiT0oMhY1s5TqAeJnGXmk4aRU4=";
   };
 
   ziti_sdk_src = fetchFromGitHub {
