@@ -37,13 +37,13 @@ OpenZiti packages and NixOS modules for `ziti-cli` and `ziti-edge-tunnel`.
 
 ```nix
 nixpkgs.overlays = [ inputs.openziti-nix.overlays.default ];
-# Then use pkgs.ziti-cli and pkgs.ziti-edge-tunnel
+# Then use pkgs.ziti and pkgs.ziti-edge-tunnel
 ```
 
 ### Packages
 
 ```shell
-nix build github:rochecompaan/openziti-nix#ziti-cli
+nix build github:rochecompaan/openziti-nix#ziti
 nix build github:rochecompaan/openziti-nix#ziti-edge-tunnel
 ```
 

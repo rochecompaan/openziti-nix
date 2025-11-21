@@ -20,9 +20,7 @@
         );
 
       overlay = final: prev: {
-        ziti-cli = final.callPackage ./pkgs/ziti-cli { };
-        # Preferred combined package name
-        ziti = final.ziti-cli;
+        ziti = final.callPackage ./pkgs/ziti { };
         ziti-edge-tunnel = final.callPackage ./pkgs/ziti-edge-tunnel { };
       };
 
