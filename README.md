@@ -23,6 +23,14 @@ OpenZiti packages and NixOS modules for `ziti-cli` and `ziti-edge-tunnel`.
           programs.ziti-edge-tunnel.service.enable = true;
           # Optional: change where identities are read from
           # programs.ziti-edge-tunnel.service.identityDir = "/var/lib/ziti/identities";
+          # Optional: enroll and bootstrap an identity (sops-nix friendly)
+          # sops.secrets."ziti-myidentity-jwt".sopsFile = ./secrets.yaml;
+          # programs.ziti-edge-tunnel.enrollment = {
+          #   enable = true;
+          #   jwtFile = config.sops.secrets."ziti-myidentity-jwt".path;
+          #   identityFile = "/opt/openziti/etc/identities/myidentity.json";
+          #   # extraArgs = [ "--verbose" ];
+          # };
           programs.ziti-router.enable = true;
           programs.ziti-router.service.enable = true;
           # programs.ziti-router.service.config = { /* ... */ };
