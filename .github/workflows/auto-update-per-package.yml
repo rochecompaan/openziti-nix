@@ -30,6 +30,12 @@ jobs:
           extra_nix_config: |
             accept-flake-config = true
 
+      - name: Configure Git identity
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
       - name: Setup Cachix (optional)
         if: env.CACHIX_CACHE != ''
         uses: cachix/cachix-action@v12
