@@ -60,7 +60,8 @@ in
         ++ lib.optionals cfg.enrollment.enable [ "ziti-edge-tunnel-enroll.service" ];
       wants = [ "network-online.target" ]
         ++ lib.optionals cfg.enrollment.enable [ "ziti-edge-tunnel-enroll.service" ];
-      path = [ pkgs.iproute2 ];
+      # Provide tools the tunnel shells out to (e.g., awk for route parsing)
+      path = [ pkgs.iproute2 pkgs.gawk ];
 
       serviceConfig = {
         Type = "exec";
