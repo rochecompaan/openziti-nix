@@ -20,13 +20,13 @@
 stdenv.mkDerivation rec {
   pname = "ziti-edge-tunnel";
   version = "1.9.5";
-  ziti_sdk_version = "1.9.15";
+  ziti_sdk_version = "1.9.18";
 
   src = fetchFromGitHub {
     owner = "openziti";
     repo = "ziti-tunnel-sdk-c";
     rev = "v${version}";
-    hash = "sha256-MmFakuhvUVF6wg7kXqiT0oMhY1s5TqAeJnGXmk4aRU4=";
+    hash = "sha256-hj02YG6Tl4Lnuov1HHvnBxtGqPjPej0P4zK1p+4K+SY=";
   };
 
   ziti_sdk_src = fetchFromGitHub {
@@ -53,15 +53,15 @@ stdenv.mkDerivation rec {
   subcommand_c_src = fetchFromGitHub {
     owner = "openziti";
     repo = "subcommands.c";
-    rev = "main";
+    rev = "87350797774530b6ba9c00017f0f53dd57e6c38e";
     hash = "sha256-Gz0/b9jcC1I0fmguSMkV0xiqKWq7vzUVT0Bd1F4iqkA";
   };
 
   tlsuv_src = fetchFromGitHub {
     owner = "openziti";
     repo = "tlsuv";
-    rev = "v0.39.6";
-    hash = "sha256-ezW6vUEqIJt59cJ1n5pbWodq59W1cs9VYnF4uE7yfhU";
+    rev = "v0.39.7";
+    hash = "sha256-J01TQcgLlasaQczmqGBKFWw3gnfOegLHyE8j38r7XY4=";
   };
 
   postPatch = ''
