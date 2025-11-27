@@ -13,14 +13,16 @@ buildGoModule rec {
     owner = "openziti";
     repo = "ziti";
     rev = "v${version}";
-    hash = "sha256-jpIVCXKYHt6pxrpRQ+cbMKo7ud3ChnMdePuVFSygjjg=";
+    hash = "sha256-Thk0h67qUL72xewbpjujv7mUYzpSAWJXMk6QmPFGqVg=";
   };
 
-  vendorHash = "sha256-hTewmgC96WlsaFBjZDbvSIrlvCvDdYhSPG7vgFQsLkk=";
+  vendorHash = "sha256-S0Gsj35weIrvJq2eHaKEUWalocGuTJT5u3TbzU0vTHc=";
 
   subPackages = [ "ziti" ];
 
   env.CGO_ENABLED = 1;
+  # Recreate vendor/ from modules to avoid upstream vendored inconsistencies
+  proxyVendor = true;
 
   ldflags = [
     "-s"
@@ -37,4 +39,3 @@ buildGoModule rec {
     platforms = lib.platforms.unix;
   };
 }
-
