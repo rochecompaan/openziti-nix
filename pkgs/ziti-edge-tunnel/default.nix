@@ -26,7 +26,7 @@ stdenv.mkDerivation rec {
     owner = "openziti";
     repo = "ziti-tunnel-sdk-c";
     rev = "v${version}";
-    hash = "sha256-hj02YG6Tl4Lnuov1HHvnBxtGqPjPej0P4zK1p+4K+SY=";
+    hash = "sha256-MmFakuhvUVF6wg7kXqiT0oMhY1s5TqAeJnGXmk4aRU4=";
   };
 
   ziti_sdk_src = fetchFromGitHub {
