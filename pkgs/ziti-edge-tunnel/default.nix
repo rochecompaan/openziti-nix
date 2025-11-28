@@ -33,7 +33,7 @@ stdenv.mkDerivation rec {
     owner = "openziti";
     repo = "ziti-sdk-c";
     rev = "${ziti_sdk_version}";
-    hash = "sha256-8YUsI+D3fh9hE08wp3l3KJ6NGNRXZJrP+GxOPEP04LA=";
+    hash = "sha256-0IWpbFbcxKo9M9o1tZuYMl9+HktFf7D4ZZj6m9P45Mo=";
   };
 
   lwip_src = fetchFromGitHub {
