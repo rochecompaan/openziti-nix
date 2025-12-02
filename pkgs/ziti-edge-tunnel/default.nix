@@ -61,7 +61,7 @@ stdenv.mkDerivation rec {
     owner = "openziti";
     repo = "tlsuv";
     rev = "v0.39.7";
-    hash = "sha256-XMPHeYh32ZI7GJV9kzHkpIR5wpS0iWA2CHJsIMTnZTE=";
+    hash = "sha256-d0LLNyNmJBkWRC7QfFAkxwPoXlRNe1Tnz0Yr+jtKNRE=";
   };
 
   postPatch = ''
