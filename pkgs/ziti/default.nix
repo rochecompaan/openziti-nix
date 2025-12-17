@@ -7,16 +7,16 @@
 
 buildGoModule rec {
   pname = "ziti";
-  version = "1.6.9";
+  version = "1.8.0-pre3";
 
   src = fetchFromGitHub {
     owner = "openziti";
     repo = "ziti";
     rev = "v${version}";
-    hash = "sha256-Thk0h67qUL72xewbpjujv7mUYzpSAWJXMk6QmPFGqVg=";
+    hash = "sha256-7z/1CNBfx5ivo7aZ6nmpMJPtn5OFbUHZn/CwR9Nv2kA=";
   };
 
-  vendorHash = "sha256-S0Gsj35weIrvJq2eHaKEUWalocGuTJT5u3TbzU0vTHc=";
+  vendorHash = "sha256-K7odByiYhKwJKYQbVDhs76V0cI80ACed2YXgcA0vMZw=";
 
   subPackages = [ "ziti" ];
 
