@@ -103,7 +103,6 @@ in
       before = [ "ziti-edge-tunnel.service" ];
       serviceConfig = {
         Type = "oneshot";
-        ConditionPathExists = "!${cfg.enrollment.identityFile}";
         ExecStart = ''
           ${pkgs.ziti-edge-tunnel}/bin/ziti-edge-tunnel enroll \
             --jwt ${lib.escapeShellArg cfg.enrollment.jwtFile} \
@@ -114,6 +113,9 @@ in
           "${pkgs.coreutils}/bin/chgrp ${cfg.service.group} ${lib.escapeShellArg cfg.enrollment.identityFile}"
           "${pkgs.coreutils}/bin/chmod ug=rw,o-rwx ${lib.escapeShellArg cfg.enrollment.identityFile}"
         ];
+      };
+      unitConfig = {
+        ConditionPathExists = "!${cfg.enrollment.identityFile}";
       };
     };
   };
