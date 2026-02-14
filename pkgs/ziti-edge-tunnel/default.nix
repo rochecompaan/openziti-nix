@@ -1,140 +1,138 @@
 {
+  lib,
   stdenv,
   fetchFromGitHub,
   cmake,
-  git,
-  zip,
+  json_c,
+  libsodium,
+  libuv,
+  llhttp,
   openssl,
   pkg-config,
-  libuv,
-  zlib,
-  libsodium,
   protobufc,
-  json_c,
-  llhttp,
   systemd,
-  lib,
-  ...
+  versionCheckHook,
+  zlib,
 }:
 
-stdenv.mkDerivation rec {
-  pname = "ziti-edge-tunnel";
-  version = "1.9.5";
-  ziti_sdk_version = "1.9.18";
-
-  src = fetchFromGitHub {
-    owner = "openziti";
-    repo = "ziti-tunnel-sdk-c";
-    rev = "v${version}";
-    hash = "sha256-MmFakuhvUVF6wg7kXqiT0oMhY1s5TqAeJnGXmk4aRU4=";
-  };
+let
+  inherit (lib) cmakeBool cmakeFeature;
 
   ziti_sdk_src = fetchFromGitHub {
     owner = "openziti";
     repo = "ziti-sdk-c";
-    rev = "${ziti_sdk_version}";
-    hash = "sha256-0IWpbFbcxKo9M9o1tZuYMl9+HktFf7D4ZZj6m9P45Mo=";
+    tag = "1.9.22";
+    hash = "sha256-fA19honVf5LfWSYcXhhqaFrhNUv1oyhLAMHNiXJ++1M=";
   };
-
   lwip_src = fetchFromGitHub {
     owner = "lwip-tcpip";
     repo = "lwip";
     rev = "STABLE-2_2_1_RELEASE";
-    hash = "sha256-8TYbUgHNv9SV3l203WVfbwDEHFonDAQqdykiX9OoM34";
+    hash = "sha256-8TYbUgHNv9SV3l203WVfbwDEHFonDAQqdykiX9OoM34=";
   };
-
   lwip_contrib_src = fetchFromGitHub {
     owner = "netfoundry";
     repo = "lwip-contrib";
     rev = "STABLE-2_1_0_RELEASE";
-    hash = "sha256-Ypn/QfkiTGoKLCQ7SXozk4D/QIdo4lyza4yq3tAoP/0";
+    hash = "sha256-Ypn/QfkiTGoKLCQ7SXozk4D/QIdo4lyza4yq3tAoP/0=";
   };
-
   subcommand_c_src = fetchFromGitHub {
     owner = "openziti";
     repo = "subcommands.c";
     rev = "87350797774530b6ba9c00017f0f53dd57e6c38e";
-    hash = "sha256-Gz0/b9jcC1I0fmguSMkV0xiqKWq7vzUVT0Bd1F4iqkA";
+    hash = "sha256-Gz0/b9jcC1I0fmguSMkV0xiqKWq7vzUVT0Bd1F4iqkA=";
   };
-
   tlsuv_src = fetchFromGitHub {
     owner = "openziti";
     repo = "tlsuv";
-    rev = "v0.39.7";
-    hash = "sha256-d0LLNyNmJBkWRC7QfFAkxwPoXlRNe1Tnz0Yr+jtKNRE=";
+    rev = "v0.39.5";
+    hash = "sha256-HO/cmcpS/sWI92MeyqadP1HgaTdnbjB1K0w7GGsM0YQ=";
+  };
+in
+stdenv.mkDerivation (finalAttrs: {
+  pname = "ziti-edge-tunnel";
+  version = "1.9.5";
+
+  src = fetchFromGitHub {
+    owner = "openziti";
+    repo = "ziti-tunnel-sdk-c";
+    rev = "v${finalAttrs.version}";
+    hash = "sha256-MmFakuhvUVF6wg7kXqiT0oMhY1s5TqAeJnGXmk4aRU4=";
   };
 
   postPatch = ''
     # Workaround for broken llhttp package
     mkdir -p patched-cmake
-    cp -r ${llhttp.dev}/lib/cmake/llhttp patched-cmake/
+    cp -r ${lib.getDev llhttp}/lib/cmake/llhttp patched-cmake/
     substituteInPlace patched-cmake/llhttp/llhttp-config.cmake \
-      --replace 'set(_IMPORT_PREFIX "${llhttp}")' 'set(_IMPORT_PREFIX "${llhttp.dev}")'
+      --replace 'set(_IMPORT_PREFIX "${llhttp}")' 'set(_IMPORT_PREFIX "${lib.getDev llhttp}")'
 
     # Patch hardcoded paths to systemd tools
-    if [ -f programs/ziti-edge-tunnel/netif_driver/linux/resolvers.h ]; then
-      substituteInPlace programs/ziti-edge-tunnel/netif_driver/linux/resolvers.h \
-        --replace '"/usr/bin/busctl"' '"${systemd}/bin/busctl"' \
-        --replace '"/usr/bin/resolvectl"' '"${systemd}/bin/resolvectl"' \
-        --replace '"/usr/bin/systemd-resolve"' '"${systemd}/bin/systemd-resolve"'
-    fi
+    substituteInPlace programs/ziti-edge-tunnel/netif_driver/linux/resolvers.h \
+      --replace '"/usr/bin/busctl"' '"${systemd}/bin/busctl"' \
+      --replace '"/usr/bin/resolvectl"' '"${systemd}/bin/resolvectl"' \
+      --replace '"/usr/bin/systemd-resolve"' '"${systemd}/bin/systemd-resolve"'
   '';
 
   preConfigure = ''
     # Prepend patched cmake to path
-    export CMAKE_PREFIX_PATH="$(pwd)/patched-cmake''${CMAKE_PREFIX_PATH:+:}$CMAKE_PREFIX_PATH"
+    export CMAKE_PREFIX_PATH=$(pwd)/patched-cmake''${CMAKE_PREFIX_PATH:+:}$CMAKE_PREFIX_PATH
 
     # Copy dependencies
-    cp -r ${ziti_sdk_src} ./deps/ziti-sdk-c
     cp -r ${lwip_src} ./deps/lwip
-    cp -r ${lwip_contrib_src} ./deps/lwip-contrib
-    cp -r ${subcommand_c_src} ./deps/subcommand.c
-    cp -r ${tlsuv_src} ./deps/tlsuv
-    chmod -R +w .
+
+    chmod -R +w ./deps/
   '';
 
   cmakeFlags = [
-    "-DENABLE_VCPKG=OFF"
-    "-DDISABLE_SEMVER_VERIFICATION=ON"
-    "-DDISABLE_LIBSYSTEMD_FEATURE=ON" # Disable direct integration to use resolvectl fallback
-    "-DZITI_SDK_DIR=../deps/ziti-sdk-c"
-    "-DZITI_SDK_VERSION=${ziti_sdk_version}"
-    # Attempt to steer upstream to install under our output
-    "-DZITI_SDK_PREFIX=$out"
+    (cmakeBool "ENABLE_VCPKG" false)
+    (cmakeBool "DISABLE_SEMVER_VERIFICATION" true)
+    (cmakeBool "DISABLE_LIBSYSTEMD_FEATURE" true) # Disable direct integration to use resolvectl fallback
+    (cmakeFeature "ZITI_SDK_DIR" "${ziti_sdk_src}")
+    (cmakeFeature "ZITI_SDK_VERSION" "1.8.5")
     # Ensure a concrete version is embedded; upstream library stringifies ZITI_VERSION
-    "-DCMAKE_C_FLAGS=-DZITI_VERSION=v${version}"
-    "-DCMAKE_CXX_FLAGS=-DZITI_VERSION=v${version}"
-    "-DFETCHCONTENT_SOURCE_DIR_LWIP=../deps/lwip"
-    "-DFETCHCONTENT_SOURCE_DIR_LWIP-CONTRIB=../deps/lwip-contrib"
-    "-DFETCHCONTENT_SOURCE_DIR_SUBCOMMAND=../deps/subcommand.c"
-    "-DFETCHCONTENT_SOURCE_DIR_TLSUV=../deps/tlsuv"
-    "-DDOXYGEN_OUTPUT_DIR=/tmp/doxygen"
-    "-DFETCHCONTENT_FULLY_DISCONNECTED=ON"
+    (cmakeFeature "CMAKE_C_FLAGS" "-DZITI_VERSION=v${finalAttrs.version}")
+    (cmakeFeature "CMAKE_CXX_FLAGS" "-DZITI_VERSION=v${finalAttrs.version}")
+    (cmakeFeature "CMAKE_C_FLAGS" "-DGIT_VERSION=${finalAttrs.version}")
+    (cmakeFeature "CMAKE_CXX_FLAGS" "-DGIT_VERSION=${finalAttrs.version}")
+    (cmakeBool "FETCHCONTENT_FULLY_DISCONNECTED" true)
+    (cmakeFeature "FETCHCONTENT_SOURCE_DIR_LWIP" "../../deps/lwip")
+    (cmakeFeature "FETCHCONTENT_SOURCE_DIR_LWIP-CONTRIB" "${lwip_contrib_src}")
+    (cmakeFeature "FETCHCONTENT_SOURCE_DIR_SUBCOMMAND" "${subcommand_c_src}")
+    (cmakeFeature "FETCHCONTENT_SOURCE_DIR_TLSUV" "${tlsuv_src}")
+    (cmakeFeature "DOXYGEN_OUTPUT_DIR" "/tmp/doxygen")
+    (cmakeFeature "CMAKE_BUILD_TYPE" "release")
   ];
 
   nativeBuildInputs = [
     cmake
     pkg-config
-    git
-    zip
   ];
+
   buildInputs = [
-    openssl
-    libuv
-    zlib
-    libsodium
-    protobufc
     json_c
+    libsodium
+    libuv
     llhttp
+    openssl
+    protobufc
+    zlib
   ];
 
-  propagatedBuildInputs = [ systemd ]; # For the resolvectl command at runtime
+  runtimeDependencies = [
+    systemd # For the resolvectl command at runtime
+  ];
 
-  meta = with lib; {
-    description = "OpenZiti Edge Tunnel";
-    homepage = "https://github.com/openziti/ziti-tunnel-sdk-c";
-    license = licenses.asl20;
+  doInstallCheck = true;
+  nativeInstallCheckInputs = [ versionCheckHook ];
+  versionCheckProgramArg = "version";
+
+  meta = {
+    description = "provides protocol translation and other common functions that are useful to Ziti Tunnelers";
+    changelog = "https://github.com/openziti/ziti-tunnel-sdk-c/releases/tag/v${finalAttrs.version}";
+    homepage = "https://openziti.io/";
+    maintainers = with lib.maintainers; [ andrewzah ];
+    license = lib.licenses.asl20;
     mainProgram = "ziti-edge-tunnel";
-    platforms = platforms.linux;
   };
-}
+})

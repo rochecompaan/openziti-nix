@@ -2,40 +2,49 @@
   lib,
   buildGoModule,
   fetchFromGitHub,
-  ...
+  versionCheckHook,
 }:
 
-buildGoModule rec {
+buildGoModule (finalAttrs: {
   pname = "ziti";
-  version = "1.6.9";
+  version = "1.6.12";
 
   src = fetchFromGitHub {
     owner = "openziti";
     repo = "ziti";
-    rev = "v${version}";
-    hash = "sha256-Thk0h67qUL72xewbpjujv7mUYzpSAWJXMk6QmPFGqVg=";
+    tag = "v${finalAttrs.version}";
+    hash = "sha256-Z4VJonL+nfjIZCFt3+6pY73u9qcRCp89TQPQlzHXu1k=";
   };
 
-  vendorHash = "sha256-S0Gsj35weIrvJq2eHaKEUWalocGuTJT5u3TbzU0vTHc=";
+  vendorHash = "sha256-6FJbF7MUPnVP9YMM7mEkRdo6tF6vZrorM7EdmAmFc40=";
 
-  subPackages = [ "ziti" ];
-
-  env.CGO_ENABLED = 1;
-  # Recreate vendor/ from modules to avoid upstream vendored inconsistencies
-  proxyVendor = true;
+  subPackages = [
+    "ziti"
+    "controller"
+    "router"
+  ];
 
   ldflags = [
     "-s"
     "-w"
-    "-X github.com/openziti/ziti/common/version.Version=${version}"
-    "-X github.com/openziti/ziti/common/version.Branch=tags/v${version}"
+    "-X github.com/openziti/ziti/common/version.Version=v${finalAttrs.version}"
+    "-X github.com/openziti/ziti/common/version.Revision=v${finalAttrs.src.rev}"
+    "-X github.com/openziti/ziti/common/version.BuildDate=1970-01-01T00:00:00Z"
   ];
 
+  doInstallCheck = true;
+  nativeInstallCheckInputs = [ versionCheckHook ];
+  versionCheckProgramArg = "version";
+
   meta = {
-    description = "OpenZiti CLI (ziti)";
-    homepage = "https://github.com/openziti/ziti";
+    description = "CLI for working with a Ziti deployment";
+    changelog = "https://github.com/openziti/ziti/releases/tag/v${finalAttrs.version}";
+    homepage = "https://openziti.io/";
     license = lib.licenses.asl20;
+    maintainers = with lib.maintainers; [
+      jamalhabash
+      andrewzah
+    ];
     mainProgram = "ziti";
-    platforms = lib.platforms.unix;
   };
-}
+})
