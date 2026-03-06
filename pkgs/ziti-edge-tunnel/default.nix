@@ -64,6 +64,7 @@ stdenv.mkDerivation (finalAttrs: {
     # Workaround for broken llhttp package
     mkdir -p patched-cmake
     cp -r ${lib.getDev llhttp}/lib/cmake/llhttp patched-cmake/
+    chmod -R u+w patched-cmake
     substituteInPlace patched-cmake/llhttp/llhttp-config.cmake \
       --replace 'set(_IMPORT_PREFIX "${llhttp}")' 'set(_IMPORT_PREFIX "${lib.getDev llhttp}")'
 
