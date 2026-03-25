@@ -1,22 +1,22 @@
 {
   lib,
-  buildGoModule,
+  buildGo126Module,
   fetchFromGitHub,
   versionCheckHook,
 }:
 
-buildGoModule (finalAttrs: {
+buildGo126Module (finalAttrs: {
   pname = "ziti";
-  version = "1.6.12";
+  version = "1.6.14";
 
   src = fetchFromGitHub {
     owner = "openziti";
     repo = "ziti";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-Z4VJonL+nfjIZCFt3+6pY73u9qcRCp89TQPQlzHXu1k=";
+    hash = "sha256-wZ7yAR/LHfjY7qEXBnpzwIvbf8OoLvUHkEBlcHunYcg=";
   };
 
-  vendorHash = "sha256-6FJbF7MUPnVP9YMM7mEkRdo6tF6vZrorM7EdmAmFc40=";
+  vendorHash = "sha256-hBD4uM5Y2TyyvpJgpNPKCc/FtDu0jPkz6Tk4RhmecTQ=";
 
   subPackages = [
     "ziti"
@@ -41,9 +41,12 @@ buildGoModule (finalAttrs: {
     changelog = "https://github.com/openziti/ziti/releases/tag/v${finalAttrs.version}";
     homepage = "https://openziti.io/";
     license = lib.licenses.asl20;
-    maintainers = with lib.maintainers; [
-      jamalhabash
-      andrewzah
+    maintainers = [
+      {
+        name = "Roché Compaan";
+        email = "roche@sixfeetup.com";
+        github = "rochecompaan";
+      }
     ];
     mainProgram = "ziti";
   };
