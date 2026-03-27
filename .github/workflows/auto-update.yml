@@ -1,0 +1,65 @@
+name: Auto update packages
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: auto-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    permissions:
+      contents: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    env:
+      CACHIX_CACHE: ${{ vars.CACHIX_CACHE }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v27
+        with:
+          extra_nix_config: |
+            accept-flake-config = true
+
+      - name: Configure Git identity
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      - name: Setup Cachix (optional)
+        if: env.CACHIX_CACHE != ''
+        uses: cachix/cachix-action@v12
+        with:
+          name: ${{ env.CACHIX_CACHE }}
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
+
+      - name: Run updates
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ./scripts/update.sh
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: chore/auto-update
+          title: "chore: automated package updates"
+          commit-message: "chore: automated package updates"
+          body: |
+            Automated package update run for:
+             - ziti via nix-update
+             - ziti-edge-tunnel via the custom upstream CMake updater
+
+            A pull request is created only when this workflow produces changes.
+            Please ensure builds pass and hashes are valid.
+          labels: dependencies
+          delete-branch: true

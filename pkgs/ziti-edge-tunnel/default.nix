@@ -10,6 +10,7 @@
   openssl,
   pkg-config,
   protobufc,
+  stc,
   systemd,
   versionCheckHook,
   zlib,
@@ -21,8 +22,8 @@ let
   ziti_sdk_src = fetchFromGitHub {
     owner = "openziti";
     repo = "ziti-sdk-c";
-    tag = "1.9.22";
-    hash = "sha256-fA19honVf5LfWSYcXhhqaFrhNUv1oyhLAMHNiXJ++1M=";
+    tag = "1.11.7";
+    hash = "sha256-y8OZEn25OUA3TPU48c1fKr3fc/PaG5a1bZ8RUeNOjWg=";
   };
   lwip_src = fetchFromGitHub {
     owner = "lwip-tcpip";
@@ -45,19 +46,19 @@ let
   tlsuv_src = fetchFromGitHub {
     owner = "openziti";
     repo = "tlsuv";
-    rev = "v0.39.5";
-    hash = "sha256-HO/cmcpS/sWI92MeyqadP1HgaTdnbjB1K0w7GGsM0YQ=";
+    rev = "v0.41.1";
+    hash = "sha256-00w9xLts0lD8lZl5lc5k/9za0zhXfGesdeisbldNhZs=";
   };
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "ziti-edge-tunnel";
-  version = "1.9.5";
+  version = "1.11.2";
 
   src = fetchFromGitHub {
     owner = "openziti";
     repo = "ziti-tunnel-sdk-c";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-MmFakuhvUVF6wg7kXqiT0oMhY1s5TqAeJnGXmk4aRU4=";
+    hash = "sha256-PlXpBQUs7Em7U5AIZSuKsrwNcAnS5hYBh/0CgCV0/1Y=";
   };
 
   postPatch = ''
@@ -90,7 +91,7 @@ stdenv.mkDerivation (finalAttrs: {
     (cmakeBool "DISABLE_SEMVER_VERIFICATION" true)
     (cmakeBool "DISABLE_LIBSYSTEMD_FEATURE" true) # Disable direct integration to use resolvectl fallback
     (cmakeFeature "ZITI_SDK_DIR" "${ziti_sdk_src}")
-    (cmakeFeature "ZITI_SDK_VERSION" "1.8.5")
+    (cmakeFeature "ZITI_SDK_VERSION" "1.11.7")
     # Ensure a concrete version is embedded; upstream library stringifies ZITI_VERSION
     (cmakeFeature "CMAKE_C_FLAGS" "-DZITI_VERSION=v${finalAttrs.version}")
     (cmakeFeature "CMAKE_CXX_FLAGS" "-DZITI_VERSION=v${finalAttrs.version}")
@@ -117,6 +118,7 @@ stdenv.mkDerivation (finalAttrs: {
     llhttp
     openssl
     protobufc
+    stc
     zlib
   ];
 
@@ -132,7 +134,13 @@ stdenv.mkDerivation (finalAttrs: {
     description = "provides protocol translation and other common functions that are useful to Ziti Tunnelers";
     changelog = "https://github.com/openziti/ziti-tunnel-sdk-c/releases/tag/v${finalAttrs.version}";
     homepage = "https://openziti.io/";
-    maintainers = with lib.maintainers; [ andrewzah ];
+    maintainers = [
+      {
+        name = "Roché Compaan";
+        email = "roche@sixfeetup.com";
+        github = "rochecompaan";
+      }
+    ];
     license = lib.licenses.asl20;
     mainProgram = "ziti-edge-tunnel";
   };
