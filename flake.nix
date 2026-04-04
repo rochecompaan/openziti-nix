@@ -20,6 +20,7 @@
         );
 
       overlay = final: prev: {
+        stc = prev.stc or (final.callPackage ./pkgs/stc { });
         ziti = final.callPackage ./pkgs/ziti { };
         ziti-edge-tunnel = final.callPackage ./pkgs/ziti-edge-tunnel { };
       };
