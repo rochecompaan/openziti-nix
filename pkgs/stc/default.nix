@@ -2,6 +2,11 @@
   lib,
   stdenv,
   fetchFromGitHub,
+  fetchpatch,
+  flex,
+  meson,
+  ninja,
+  pkg-config,
 }:
 
 stdenv.mkDerivation (finalAttrs: {
@@ -21,35 +26,30 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-JiFyJN+hAbzTHqim1i6TJFmKfHlnOfP3yDLCZDE7uqo=";
   };
 
-  dontBuild = true;
+  patches = [
+    # Backport pkg-config support and follow-up fixes from upstream.
+    (fetchpatch {
+      url = "https://github.com/stclib/STC/commit/92751b4d04b2d980d640b28bd22a9cd651d77c6a.patch";
+      hash = "sha256-11sE5pS7sqdfCGsGlvajkfgCf+QIkRFp4Js2//kAI3s=";
+    })
+    (fetchpatch {
+      url = "https://github.com/stclib/STC/commit/0fa9ad03516ba0f71b38674f0ec631929368f385.patch";
+      hash = "sha256-e1rhrKaf9fFAmSi8Puo494iG+hAdHZFzyn8IJoKjdAI=";
+    })
+  ];
 
-  installPhase = ''
-    runHook preInstall
-
-    mkdir -p "$out/share/licenses/${finalAttrs.pname}"
-    mkdir -p "$dev/include"
-    mkdir -p "$dev/lib/pkgconfig"
-    mkdir -p "$doc/share/doc/${finalAttrs.pname}"
-
-    cp LICENSE "$out/share/licenses/${finalAttrs.pname}/"
-    cp README.md "$doc/share/doc/${finalAttrs.pname}/"
-    cp -r include/. "$dev/include/"
-    cp -r docs/. "$doc/share/doc/${finalAttrs.pname}/"
-
-    cat > "$dev/lib/pkgconfig/stc.pc" <<EOF
-    prefix=$dev
-    exec_prefix=$dev
-    includedir=$dev/include
-
-    Name: stc
-    Description: C99 container library with generic and type-safe data structures
-    Version: ${finalAttrs.version}
-    Cflags: -I$dev/include
-    Libs:
-    EOF
-
-    runHook postInstall
+  postPatch = ''
+    meson rewrite kwargs set project / version '${finalAttrs.version}'
   '';
+
+  nativeBuildInputs = [
+    flex
+    meson
+    ninja
+    pkg-config
+  ];
+
+  doCheck = false;
 
   meta = {
     description = "C99 container library with generic and type-safe data structures";
