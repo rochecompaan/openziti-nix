@@ -19,11 +19,27 @@
           }) systems
         );
 
-      overlay = final: prev: {
-        stc = prev.stc or (final.callPackage ./pkgs/stc { });
-        ziti = final.callPackage ./pkgs/ziti { };
-        ziti-edge-tunnel = final.callPackage ./pkgs/ziti-edge-tunnel { };
-      };
+      overlay = final: prev:
+        let
+          # ziti currently requires Go >= 1.26.2, while nixpkgs still ships 1.26.1.
+          go_1_26 = prev.go_1_26.overrideAttrs (old: rec {
+            version = "1.26.2";
+            src = prev.fetchurl {
+              url = "https://go.dev/dl/go${version}.src.tar.gz";
+              hash = "sha256-LpHrtpR6lulDb7KzkmqIAu/mOm03Xf/sT4Kqnb1v1Ds=";
+            };
+          });
+
+          buildGo126Module = prev.callPackage "${prev.path}/pkgs/build-support/go/module.nix" {
+            go = final.buildPackages.go_1_26;
+          };
+        in
+        {
+          inherit go_1_26 buildGo126Module;
+          stc = prev.stc or (final.callPackage ./pkgs/stc { });
+          ziti = final.callPackage ./pkgs/ziti { };
+          ziti-edge-tunnel = final.callPackage ./pkgs/ziti-edge-tunnel { };
+        };
 
       mkPkgs =
         system:
