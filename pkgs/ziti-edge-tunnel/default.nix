@@ -5,6 +5,7 @@
   cmake,
   json_c,
   libsodium,
+  libpcap,
   libuv,
   llhttp,
   openssl,
@@ -58,7 +59,7 @@ stdenv.mkDerivation (finalAttrs: {
     owner = "openziti";
     repo = "ziti-tunnel-sdk-c";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-PlXpBQUs7Em7U5AIZSuKsrwNcAnS5hYBh/0CgCV0/1Y=";
+    hash = "sha256-ZSTurUxd5tsnK/cCEynKLjSoaJUCOJQNLZ9RE5Mf3oU=";
   };
 
   postPatch = ''
@@ -114,6 +115,7 @@ stdenv.mkDerivation (finalAttrs: {
   buildInputs = [
     json_c
     libsodium
+    libpcap
     libuv
     llhttp
     openssl

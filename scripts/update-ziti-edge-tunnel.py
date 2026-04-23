@@ -144,7 +144,7 @@ def replace_one(text: str, pattern: str, replacement: str) -> str:
 
 def update_fetch_block(text: str, block_name: str, attr_name: str, value: str, hash_value: str) -> str:
     pattern = (
-        rf'({re.escape(block_name)}\s*=\s*fetchFromGitHub\s*\{{.*?'
+        rf'(^\s*{re.escape(block_name)}\s*=\s*fetchFromGitHub\s*\{{.*?'
         rf'{re.escape(attr_name)}\s*=\s*")[^"]+(";\s*hash\s*=\s*")[^"]+(";\s*\}};)'
     )
     replacement = rf"\g<1>{value}\2{hash_value}\3"
