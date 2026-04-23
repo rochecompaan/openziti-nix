@@ -7,16 +7,16 @@
 
 buildGo126Module (finalAttrs: {
   pname = "ziti";
-  version = "1.6.14";
+  version = "1.6.15";
 
   src = fetchFromGitHub {
     owner = "openziti";
     repo = "ziti";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-wZ7yAR/LHfjY7qEXBnpzwIvbf8OoLvUHkEBlcHunYcg=";
+    hash = "sha256-Lvm7iWKDx3IYUsWTzrpuEaKSp0A/5zUGO+XxOJwzCkY=";
   };
 
-  vendorHash = "sha256-hBD4uM5Y2TyyvpJgpNPKCc/FtDu0jPkz6Tk4RhmecTQ=";
+  vendorHash = "sha256-nGOSIwyIYYN1lKMDbQIuv2Sui6Y1f8A3/7RldSe1u4s=";
 
   subPackages = [
     "ziti"
