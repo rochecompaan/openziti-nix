@@ -30,7 +30,7 @@
             };
           });
 
-          buildGo126Module = prev.callPackage "${prev.path}/pkgs/build-support/go/module.nix" {
+          buildGo126Module = prev.callPackage (prev.path + "/pkgs/build-support/go/module.nix") {
             go = final.buildPackages.go_1_26;
           };
         in
