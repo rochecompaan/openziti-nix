@@ -101,9 +101,11 @@ in
       after = [ "network-online.target" "local-fs.target" ];
       wants = [ "network-online.target" ];
       before = [ "ziti-edge-tunnel.service" ];
+      unitConfig = {
+        ConditionPathExists = "!${cfg.enrollment.identityFile}";
+      };
       serviceConfig = {
         Type = "oneshot";
-        ConditionPathExists = "!${cfg.enrollment.identityFile}";
         ExecStart = ''
           ${pkgs.ziti-edge-tunnel}/bin/ziti-edge-tunnel enroll \
             --jwt ${lib.escapeShellArg cfg.enrollment.jwtFile} \
