@@ -3,20 +3,24 @@
   buildGo126Module,
   fetchFromGitHub,
   versionCheckHook,
+  version ? "2.0.0",
+  srcHash ? "sha256-JFEj4AYfyJl4OWCgFL2Vb+/YYig5rNnTmqmd5Xr4LUY=",
+  vendorHash ? "sha256-6U9iQrU1SESdhY2CQz2ZMcA4MknfCc4Ah6v6JClJ78c=",
+  modulePath ? "github.com/openziti/ziti/v2",
 }:
 
 buildGo126Module (finalAttrs: {
   pname = "ziti";
-  version = "1.6.15";
+  inherit version;
 
   src = fetchFromGitHub {
     owner = "openziti";
     repo = "ziti";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-Lvm7iWKDx3IYUsWTzrpuEaKSp0A/5zUGO+XxOJwzCkY=";
+    hash = srcHash;
   };
 
-  vendorHash = "sha256-nGOSIwyIYYN1lKMDbQIuv2Sui6Y1f8A3/7RldSe1u4s=";
+  inherit vendorHash;
 
   subPackages = [
     "ziti"
@@ -27,9 +31,9 @@ buildGo126Module (finalAttrs: {
   ldflags = [
     "-s"
     "-w"
-    "-X github.com/openziti/ziti/common/version.Version=v${finalAttrs.version}"
-    "-X github.com/openziti/ziti/common/version.Revision=v${finalAttrs.src.rev}"
-    "-X github.com/openziti/ziti/common/version.BuildDate=1970-01-01T00:00:00Z"
+    "-X ${modulePath}/common/version.Version=v${finalAttrs.version}"
+    "-X ${modulePath}/common/version.Revision=v${finalAttrs.src.rev}"
+    "-X ${modulePath}/common/version.BuildDate=1970-01-01T00:00:00Z"
   ];
 
   doInstallCheck = true;

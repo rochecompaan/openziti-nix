@@ -45,13 +45,15 @@ OpenZiti packages and NixOS modules for `ziti-cli` and `ziti-edge-tunnel`.
 
 ```nix
 nixpkgs.overlays = [ inputs.openziti-nix.overlays.default ];
-# Then use pkgs.ziti and pkgs.ziti-edge-tunnel
+# Then use pkgs.ziti (v2 default), pkgs.ziti_2, pkgs.ziti_1, and pkgs.ziti-edge-tunnel
 ```
 
 ### Packages
 
 ```shell
-nix build github:rochecompaan/openziti-nix#ziti
+nix build github:rochecompaan/openziti-nix#ziti      # default Ziti major, currently v2
+nix build github:rochecompaan/openziti-nix#ziti_2
+nix build github:rochecompaan/openziti-nix#ziti_1
 nix build github:rochecompaan/openziti-nix#ziti-edge-tunnel
 ```
 

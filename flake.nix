@@ -19,7 +19,8 @@
           }) systems
         );
 
-      overlay = final: prev:
+      overlay =
+        final: prev:
         let
           # ziti currently requires Go >= 1.26.2, while nixpkgs still ships 1.26.1.
           go_1_26 = prev.go_1_26.overrideAttrs (old: rec {
@@ -37,7 +38,14 @@
         {
           inherit go_1_26 buildGo126Module;
           stc = prev.stc or (final.callPackage ./pkgs/stc { });
-          ziti = final.callPackage ./pkgs/ziti { };
+          ziti_1 = final.callPackage ./pkgs/ziti {
+            version = "1.6.15";
+            srcHash = "sha256-Lvm7iWKDx3IYUsWTzrpuEaKSp0A/5zUGO+XxOJwzCkY=";
+            vendorHash = "sha256-nGOSIwyIYYN1lKMDbQIuv2Sui6Y1f8A3/7RldSe1u4s=";
+            modulePath = "github.com/openziti/ziti";
+          };
+          ziti_2 = final.callPackage ./pkgs/ziti { };
+          ziti = final.ziti_2;
           ziti-edge-tunnel = final.callPackage ./pkgs/ziti-edge-tunnel { };
         };
 
@@ -57,8 +65,31 @@
           pkgs = mkPkgs system;
         in
         {
-          inherit (pkgs) ziti ziti-edge-tunnel;
+          inherit (pkgs)
+            ziti
+            ziti_1
+            ziti_2
+            ziti-edge-tunnel
+            ;
           default = pkgs.ziti;
+        }
+      );
+
+      checks = forAllSystems (
+        system:
+        let
+          pkgs = mkPkgs system;
+        in
+        {
+          ziti-v2-default = pkgs.runCommand "ziti-v2-default-check" { } ''
+            test "${pkgs.ziti.version}" = "${pkgs.ziti_2.version}"
+            case "${pkgs.ziti_1.version}" in
+              1.*) ;;
+              *) exit 1 ;;
+            esac
+            ${pkgs.ziti}/bin/ziti version | ${pkgs.gnugrep}/bin/grep -F "v${pkgs.ziti.version}"
+            touch $out
+          '';
         }
       );
 
