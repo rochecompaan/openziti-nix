@@ -22,29 +22,36 @@
       overlay =
         final: prev:
         let
-          # ziti currently requires Go >= 1.26.2, while nixpkgs still ships 1.26.1.
-          go_1_26 = prev.go_1_26.overrideAttrs (old: rec {
-            version = "1.26.2";
-            src = prev.fetchurl {
-              url = "https://go.dev/dl/go${version}.src.tar.gz";
-              hash = "sha256-LpHrtpR6lulDb7KzkmqIAu/mOm03Xf/sT4Kqnb1v1Ds=";
-            };
-          });
+          # Ziti requires Go >= 1.26.2. Keep this Go private to Ziti builds so
+          # applying the overlay does not replace nixpkgs' go_1_26 globally.
+          zitiGo_1_26 =
+            if prev.lib.versionAtLeast prev.buildPackages.go_1_26.version "1.26.2" then
+              prev.buildPackages.go_1_26
+            else
+              prev.buildPackages.go_1_26.overrideAttrs (_old: rec {
+                version = "1.26.2";
+                src = prev.fetchurl {
+                  url = "https://go.dev/dl/go${version}.src.tar.gz";
+                  hash = "sha256-LpHrtpR6lulDb7KzkmqIAu/mOm03Xf/sT4Kqnb1v1Ds=";
+                };
+              });
 
-          buildGo126Module = prev.callPackage (prev.path + "/pkgs/build-support/go/module.nix") {
-            go = final.buildPackages.go_1_26;
+          zitiBuildGo126Module = prev.callPackage (prev.path + "/pkgs/build-support/go/module.nix") {
+            go = zitiGo_1_26;
           };
         in
         {
-          inherit go_1_26 buildGo126Module;
           stc = prev.stc or (final.callPackage ./pkgs/stc { });
           ziti_1 = final.callPackage ./pkgs/ziti {
+            buildGo126Module = zitiBuildGo126Module;
             version = "1.6.15";
             srcHash = "sha256-Lvm7iWKDx3IYUsWTzrpuEaKSp0A/5zUGO+XxOJwzCkY=";
             vendorHash = "sha256-nGOSIwyIYYN1lKMDbQIuv2Sui6Y1f8A3/7RldSe1u4s=";
             modulePath = "github.com/openziti/ziti";
           };
-          ziti_2 = final.callPackage ./pkgs/ziti { };
+          ziti_2 = final.callPackage ./pkgs/ziti {
+            buildGo126Module = zitiBuildGo126Module;
+          };
           ziti = final.ziti_2;
           ziti-edge-tunnel = final.callPackage ./pkgs/ziti-edge-tunnel { };
         };
