@@ -44,7 +44,7 @@ in
       };
       extraArgs = mkOption {
         type = with types; listOf str;
-        default = [];
+        default = [ ];
         description = "Extra flags to pass to `ziti-edge-tunnel enroll`.";
       };
     };
@@ -56,12 +56,19 @@ in
     systemd.services.ziti-edge-tunnel = mkIf cfg.service.enable {
       description = "Ziti Edge Tunnel";
       wantedBy = [ "multi-user.target" ];
-      after = [ "network-online.target" ]
-        ++ lib.optionals cfg.enrollment.enable [ "ziti-edge-tunnel-enroll.service" ];
-      wants = [ "network-online.target" ]
-        ++ lib.optionals cfg.enrollment.enable [ "ziti-edge-tunnel-enroll.service" ];
+      after = [
+        "network-online.target"
+      ]
+      ++ lib.optionals cfg.enrollment.enable [ "ziti-edge-tunnel-enroll.service" ];
+      wants = [
+        "network-online.target"
+      ]
+      ++ lib.optionals cfg.enrollment.enable [ "ziti-edge-tunnel-enroll.service" ];
       # Provide tools the tunnel shells out to (e.g., awk for route parsing)
-      path = [ pkgs.iproute2 pkgs.gawk ];
+      path = [
+        pkgs.iproute2
+        pkgs.gawk
+      ];
 
       serviceConfig = {
         Type = "exec";
@@ -98,7 +105,10 @@ in
     # Enrollment one-shot service
     systemd.services.ziti-edge-tunnel-enroll = mkIf cfg.enrollment.enable {
       description = "Enroll Ziti Edge Tunnel identity";
-      after = [ "network-online.target" "local-fs.target" ];
+      after = [
+        "network-online.target"
+        "local-fs.target"
+      ];
       wants = [ "network-online.target" ];
       before = [ "ziti-edge-tunnel.service" ];
       unitConfig = {

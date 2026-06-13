@@ -15,12 +15,12 @@ in
   options.programs.ziti-router = {
     enable = mkEnableOption "OpenZiti Router package available in the system";
 
-      package = mkOption {
-        type = types.package;
-        default = pkgs.ziti;
-        defaultText = literalExpression "pkgs.ziti";
-        description = "Package providing the `ziti` binary used to run the router (invoked as `ziti router run`).";
-      };
+    package = mkOption {
+      type = types.package;
+      default = pkgs.ziti;
+      defaultText = literalExpression "pkgs.ziti";
+      description = "Package providing the `ziti` binary used to run the router (invoked as `ziti router run`).";
+    };
 
     service = {
       enable = mkEnableOption "OpenZiti Router systemd service";
@@ -127,7 +127,7 @@ in
           Type = "exec";
           User = svc.user;
           Group = svc.group;
-          ExecStart = ''${cfg.package}/bin/ziti router run ${svc.configFile} ${lib.escapeShellArgs svc.extraArgs}'';
+          ExecStart = "${cfg.package}/bin/ziti router run ${svc.configFile} ${lib.escapeShellArgs svc.extraArgs}";
           Restart = "on-failure";
           WorkingDirectory = svc.stateDir;
         };
