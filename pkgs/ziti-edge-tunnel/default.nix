@@ -67,14 +67,21 @@ stdenv.mkDerivation (finalAttrs: {
     mkdir -p patched-cmake
     cp -r ${lib.getDev llhttp}/lib/cmake/llhttp patched-cmake/
     chmod -R u+w patched-cmake
-    substituteInPlace patched-cmake/llhttp/llhttp-config.cmake \
-      --replace 'set(_IMPORT_PREFIX "${llhttp}")' 'set(_IMPORT_PREFIX "${lib.getDev llhttp}")'
+
+    llhttpCmakeFiles=$(grep -rl 'set(_IMPORT_PREFIX "${llhttp}")' patched-cmake/llhttp || true)
+    if [ -z "$llhttpCmakeFiles" ]; then
+      echo "could not find llhttp CMake import prefix to patch" >&2
+      find patched-cmake/llhttp -maxdepth 1 -type f -print >&2
+      exit 1
+    fi
+    substituteInPlace $llhttpCmakeFiles \
+      --replace-fail 'set(_IMPORT_PREFIX "${llhttp}")' 'set(_IMPORT_PREFIX "${lib.getDev llhttp}")'
 
     # Patch hardcoded paths to systemd tools
     substituteInPlace programs/ziti-edge-tunnel/netif_driver/linux/resolvers.h \
-      --replace '"/usr/bin/busctl"' '"${systemd}/bin/busctl"' \
-      --replace '"/usr/bin/resolvectl"' '"${systemd}/bin/resolvectl"' \
-      --replace '"/usr/bin/systemd-resolve"' '"${systemd}/bin/systemd-resolve"'
+      --replace-fail '"/usr/bin/busctl"' '"${systemd}/bin/busctl"' \
+      --replace-fail '"/usr/bin/resolvectl"' '"${systemd}/bin/resolvectl"' \
+      --replace-fail '"/usr/bin/systemd-resolve"' '"${systemd}/bin/systemd-resolve"'
   '';
 
   preConfigure = ''
