@@ -3,9 +3,9 @@
   buildGo126Module,
   fetchFromGitHub,
   versionCheckHook,
-  version ? "2.0.0",
-  srcHash ? "sha256-JFEj4AYfyJl4OWCgFL2Vb+/YYig5rNnTmqmd5Xr4LUY=",
-  vendorHash ? "sha256-6U9iQrU1SESdhY2CQz2ZMcA4MknfCc4Ah6v6JClJ78c=",
+  version ? "2.0.6",
+  srcHash ? "sha256-QMcru22nm7deA8OXmKdeTM1jQJVklJ3sJaqBGJO4qH0=",
+  vendorHash ? "sha256-yZgX1u3d8mPrATsG0kNAw3vAjqHBC4/X+Nh7t0k0ccA=",
   modulePath ? "github.com/openziti/ziti/v2",
 }:
 

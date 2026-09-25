@@ -23,8 +23,8 @@ let
   ziti_sdk_src = fetchFromGitHub {
     owner = "openziti";
     repo = "ziti-sdk-c";
-    tag = "1.15.0";
-    hash = "sha256-o1Hcrqz+e2vJZjnPxIAgy5xKwu+M24o/Knh99dwTR3I=";
+    tag = "1.18.7";
+    hash = "sha256-BB5tnT/8i6yq1fyNnDdItpyKQNUoloxO7xnCxG/vvFk=";
   };
   lwip_src = fetchFromGitHub {
     owner = "lwip-tcpip";
@@ -47,19 +47,19 @@ let
   tlsuv_src = fetchFromGitHub {
     owner = "openziti";
     repo = "tlsuv";
-    rev = "v0.41.1";
-    hash = "sha256-mT1K8OpwE+brdEc6ik8jMhEsXGuEh5nqfY3urx7IQiA=";
+    rev = "v0.42.4";
+    hash = "sha256-qhljuAeOdYgeOO0cloghfrgFu2H4G2mY4OZSKfmp4yA=";
   };
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "ziti-edge-tunnel";
-  version = "1.15.1";
+  version = "1.18.7";
 
   src = fetchFromGitHub {
     owner = "openziti";
     repo = "ziti-tunnel-sdk-c";
     rev = "v${finalAttrs.version}";
-    hash = "sha256-ZSTurUxd5tsnK/cCEynKLjSoaJUCOJQNLZ9RE5Mf3oU=";
+    hash = "sha256-6zclBbmGZZyZPlLf9+rzdz2uqIz6GhHz5S54/ZQ7VSI=";
   };
 
   postPatch = ''
@@ -99,7 +99,7 @@ stdenv.mkDerivation (finalAttrs: {
     (cmakeBool "DISABLE_SEMVER_VERIFICATION" true)
     (cmakeBool "DISABLE_LIBSYSTEMD_FEATURE" true) # Disable direct integration to use resolvectl fallback
     (cmakeFeature "ZITI_SDK_DIR" "${ziti_sdk_src}")
-    (cmakeFeature "ZITI_SDK_VERSION" "1.15.0")
+    (cmakeFeature "ZITI_SDK_VERSION" "1.18.7")
     # Ensure a concrete version is embedded; upstream library stringifies ZITI_VERSION
     (cmakeFeature "CMAKE_C_FLAGS" "-DZITI_VERSION=v${finalAttrs.version}")
     (cmakeFeature "CMAKE_CXX_FLAGS" "-DZITI_VERSION=v${finalAttrs.version}")
